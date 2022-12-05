@@ -1,0 +1,29 @@
+body {
+  padding-top: 0;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+img, video {
+  user-select:none;
+  -webkit-touch-callout:none;
+}
+
+.to-top{
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  right: 0;
+  bottom: 0;
+  font-size: 50px;
+  font-weight: bold;
+  color: #17a2b8;
+  background: #343a40;
+  cursor: pointer;
+}

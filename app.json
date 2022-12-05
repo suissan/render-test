@@ -1,0 +1,9 @@
+{
+  "name": "えくすたーなるとぅいったー",
+  "description": "ツイッター認証を利用し、外部からツイッターを簡単操作するアプリケーションです",
+  "logo": "",
+  "keywords": [
+    "node"
+  ],
+  "image": "heroku/nodejs"
+}

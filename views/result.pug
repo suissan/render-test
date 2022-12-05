@@ -1,0 +1,53 @@
+extends layout
+
+block content
+  div.my-4
+    if tweets.length === 0
+      h1 「#{word}」の検索結果はありません
+    else
+      h1 「#{word}」の検索結果
+    each tweet in tweets
+      div.card.my-5.text-center
+        div.card-header
+          p.lead #{tweet.user.screen_name} さん
+        - let twiStr = tweet.full_text
+        - let regularExpressionAtMedia = /(ftp|http|https):\/\/.+/g
+        - let regularExpressionAtHashtag = /#.+/g
+        - let regularExpressionAt = /.m3u8/g
+        - let imgColle = []
+        div.card-body
+          if twiStr.match(regularExpressionAtMedia) || twiStr.match(regularExpressionAtHashtag)
+            - let newStr = twiStr.replace(regularExpressionAtMedia, '').replace(regularExpressionAtHashtag, '')
+            p.text-primary 画像、動画、リンク、またはタグ付きのツイート
+            h5(style="white-space:pre-wrap;") #{newStr}
+          else
+            h5(style="white-space:pre-wrap;") #{twiStr}
+          if tweet.extended_entities
+            if tweet.extended_entities.media[0].video_info
+              if tweet.extended_entities.media[0].video_info.variants[0].url.match(regularExpressionAt)
+                p.text-warning 現在この動画フォーマットに対応しておりません。実際のツイートからご覧ください。
+                video(src=`${tweet.extended_entities.media[0].video_info.variants[0].url}`
+                     width="30%" height="30%" controls oncontextmenu="return false;" controlsList="nodownload")
+              else
+                video(src=`${tweet.extended_entities.media[0].video_info.variants[0].url}`
+                     width="30%" height="30%" controls oncontextmenu="return false;" controlsList="nodownload")
+            else if tweet.extended_entities.media
+              - for (let i = 0; i < tweet.extended_entities.media.length; i++)
+                - imgColle.push(tweet.extended_entities.media[i].media_url_https)
+                img(src=`${tweet.extended_entities.media[i].media_url_https}` alt="ツイート画像" 
+                   width="30%" height="30%" oncontextmenu="return false;" controlsList="nodownload")
+        div.card-footer
+          a(href=`https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`).navbar-brand.nav-link @#{tweet.user.screen_name}さんのツイートへ
+          button(
+            data-tweet-username=tweet.user.screen_name
+            data-tweet-text=tweet.full_text
+            data-tweet-id=tweet.id_str
+            data-tweet-word=word
+            data-tweet-video
+            =(tweet.extended_entities && tweet.extended_entities.media[0].video_info) ?
+            tweet.extended_entities.media[0].video_info.variants[0].url : ''
+            data-tweet-img
+            =(tweet.extended_entities && tweet.extended_entities.media && tweet.extended_entities.media[0].video_info == undefined) ?
+            imgColle : ''
+          ).form-button.btn.btn-outline-info.mx-2 お気に入り
+    p.to-top ⇧

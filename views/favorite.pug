@@ -1,0 +1,39 @@
+extends layout
+
+block content
+  div.my-4
+    if user
+      if favorites.length === 0
+        p.lead お気に入り登録されたツイートがありません
+      else
+        each favorite in favorites
+          div.card.my-5.text-center
+            div.card-header
+              p.lead 検索ワード「#{favorite.word}」
+              p.lead #{favorite.username} さん
+            - let regularExpressionAtMedia = /(ftp|http|https):\/\/.+/g
+            - let regularExpressionAtHashtag = /#.+/g
+            - let regularExpressionAt = /.m3u8/g
+            div.card-body
+              if favorite.text.match(regularExpressionAtMedia) || favorite.text.match(regularExpressionAtHashtag)
+                - let newStr = favorite.text.replace(regularExpressionAtMedia, '').replace(regularExpressionAtHashtag, '')
+                p.text-primary 画像、動画、リンク、またはタグ付きのツイート
+                h5(style="white-space:pre-wrap;") #{newStr}
+              else
+                h5(style="white-space:pre-wrap;") #{favorite.text}
+              if favorite.video
+                if favorite.video.match(regularExpressionAt)
+                  p.text-warning 現在この動画フォーマットに対応しておりません。実際のツイートからご覧ください。
+                  video(src=`${favorite.video}` width="30%" height="30%" controls oncontextmenu="return false;" controlsList="nodownload")
+                else 
+                  video(src=`${favorite.video}` width="30%" height="30%" controls oncontextmenu="return false;" controlsList="nodownload")
+              if favorite.img
+                - let imgColle = favorite.img.split(",")
+                - for (let i = 0; i < imgColle.length; i++)
+                  img(src=`${imgColle[i]}`, alt="ツイート画像" width="30%", height="30%" oncontextmenu="return false;" controlsList="nodownload")
+            div.card-footer
+              a(href=`https://twitter.com/${favorite.username}/status/${favorite.twId}`).navbar-brand.nav-link @#{favorite.username}さんのツイートへ
+              form(method="post" action=`/tweets/${favorite.twId}?delete=1`)
+                input(type="hidden" name="_csrf" value!=csrfToken)
+                button(type="submit").btn.btn-outline-danger お気に入りから削除
+        p.to-top ⇧
